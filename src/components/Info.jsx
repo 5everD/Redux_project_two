@@ -1,4 +1,8 @@
 import styled from 'styled-components';
+import {useDispatch, useSelector} from 'react-redux';
+import {selectNeighbors} from '../store/details/details-selector';
+import {useEffect} from 'react';
+import {loadNeighborsByBorder} from '../store/details/details-actions';
 
 const Wrapper = styled.section`
   margin-top: 3rem;
@@ -87,81 +91,90 @@ const Tag = styled.span`
 `;
 
 export const Info = (props) => {
-  const {
-    name,
-    nativeName,
-    flag,
-    capital,
-    population,
-    region,
-    subregion,
-    topLevelDomain,
-    currencies = [],
-    languages = [],
-    borders = [],
-    push,
-  } = props;
+    const {
+        name,
+        nativeName,
+        flag,
+        capital,
+        population,
+        region,
+        subregion,
+        topLevelDomain,
+        currencies = [],
+        languages = [],
+        borders = [],
+        push,
+    } = props;
 
-  return (
-    <Wrapper>
-      <InfoImage src={flag} alt={name} />
+    const dispatch = useDispatch();
+    const neighbors = useSelector(selectNeighbors);
 
-      <div>
-        <InfoTitle>{name}</InfoTitle>
-        <ListGroup>
-          <List>
-            <ListItem>
-              <b>Native Name:</b> {nativeName}
-            </ListItem>
-            <ListItem>
-              <b>Population</b> {population}
-            </ListItem>
-            <ListItem>
-              <b>Region:</b> {region}
-            </ListItem>
-            <ListItem>
-              <b>Sub Region:</b> {subregion}
-            </ListItem>
-            <ListItem>
-              <b>Capital:</b> {capital}
-            </ListItem>
-          </List>
-          <List>
-            <ListItem>
-              <b>Top Level Domain</b>{' '}
-              {topLevelDomain.map((d) => (
-                <span key={d}>{d}</span>
-              ))}
-            </ListItem>
-            <ListItem>
-              <b>Currency</b>{' '}
-              {currencies.map((c) => (
-                <span key={c.code}>{c.name} </span>
-              ))}
-            </ListItem>
-            <ListItem>
-              <b>Top Level Domain</b>{' '}
-              {languages.map((l) => (
-                <span key={l.name}>{l.name}</span>
-              ))}
-            </ListItem>
-          </List>
-        </ListGroup>
-        <Meta>
-          <b>Border Countries</b>
-          {!borders.length ? (
-            <span>There is no border countries</span>
-          ) : (
-            <TagGroup>
-              {[].map((b) => (
-                <Tag key={b} onClick={() => push(`/country/${b}`)}>
-                  {b}
-                </Tag>
-              ))}
-            </TagGroup>
-          )}
-        </Meta>
-      </div>
-    </Wrapper>
-  );
+    useEffect(() => {
+        if (borders.length) {
+            dispatch(loadNeighborsByBorder(borders));
+        }
+    }, [borders, dispatch]);
+
+    return (
+        <Wrapper>
+            <InfoImage src={flag} alt={name}/>
+
+            <div>
+                <InfoTitle>{name}</InfoTitle>
+                <ListGroup>
+                    <List>
+                        <ListItem>
+                            <b>Native Name:</b> {nativeName}
+                        </ListItem>
+                        <ListItem>
+                            <b>Population</b> {population}
+                        </ListItem>
+                        <ListItem>
+                            <b>Region:</b> {region}
+                        </ListItem>
+                        <ListItem>
+                            <b>Sub Region:</b> {subregion}
+                        </ListItem>
+                        <ListItem>
+                            <b>Capital:</b> {capital}
+                        </ListItem>
+                    </List>
+                    <List>
+                        <ListItem>
+                            <b>Top Level Domain</b>{' '}
+                            {topLevelDomain.map((d) => (
+                                <span key={d}>{d}</span>
+                            ))}
+                        </ListItem>
+                        <ListItem>
+                            <b>Currency</b>{' '}
+                            {currencies.map((c) => (
+                                <span key={c.code}>{c.name} </span>
+                            ))}
+                        </ListItem>
+                        <ListItem>
+                            <b>Top Level Domain</b>{' '}
+                            {languages.map((l) => (
+                                <span key={l.name}>{l.name}</span>
+                            ))}
+                        </ListItem>
+                    </List>
+                </ListGroup>
+                <Meta>
+                    <b>Border Countries</b>
+                    {!borders.length ? (
+                        <span>There is no border countries</span>
+                    ) : (
+                        <TagGroup>
+                            {neighbors.map((countryName) => (
+                                <Tag key={countryName} onClick={() => push(`/country/${countryName}`)}>
+                                    {countryName}
+                                </Tag>
+                            ))}
+                        </TagGroup>
+                    )}
+                </Meta>
+            </div>
+        </Wrapper>
+    );
 };
