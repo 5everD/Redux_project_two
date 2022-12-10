@@ -13,14 +13,11 @@ export const CustomSelect = styled(Select).attrs({
             border: 'none',
             boxShadow: 'var(--shadow)',
             height: '50px',
-        }),
-        option: (provided, state) => ({
+        }), option: (provided, state) => ({
             ...provided,
             cursor: 'pointer',
             color: 'var(--colors-text)',
-            backgroundColor: state.isSelected
-                ? 'var(--colors-bg)'
-                : 'var(--colors-ui-base)',
+            backgroundColor: state.isSelected ? 'var(--colors-bg)' : 'var(--colors-ui-base)',
         }),
     },
 })`
